@@ -142,7 +142,8 @@ class DevTeamTools:
             code_analysis_tool,  # For code quality checks
             file_system_tool,    # For file operations
             test_runner_tool,    # For running unit tests
-            context7_tool        # For accessing documentation
+            context7_tool,       # For accessing documentation
+            doc_generator_tool   # For generating code documentation
         ]
     
     @staticmethod
@@ -152,4 +153,38 @@ class DevTeamTools:
             test_runner_tool,    # For running tests
             code_analysis_tool,  # For code quality analysis
             file_system_tool     # For accessing test files and results
+        ]
+
+    @staticmethod
+    def get_documentation_tools() -> List[BaseTool]:
+        """Get tools for the documentation specialist agent."""
+        return [
+            doc_generator_tool,  # For generating documentation
+            file_system_tool,    # For file operations
+            code_analysis_tool   # For code inspection
+        ]
+
+    @staticmethod
+    def get_product_owner_tools() -> List[BaseTool]:
+        """Get tools for the product owner agent."""
+        return [
+            doc_generator_tool,  # For requirements documentation
+            file_system_tool     # For file operations
+        ]
+
+    @staticmethod
+    def get_architect_tools() -> List[BaseTool]:
+        """Get tools for the architect agent."""
+        return [
+            code_analysis_tool,  # For code analysis
+            doc_generator_tool,  # For architecture documentation
+            file_system_tool     # For file operations
+        ]
+
+    @staticmethod
+    def get_devops_tools() -> List[BaseTool]:
+        """Get tools for the DevOps engineer agent."""
+        return [
+            file_system_tool,    # For system operations
+            code_analysis_tool   # For code quality checks
         ]
