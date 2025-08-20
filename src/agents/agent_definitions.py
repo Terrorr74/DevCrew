@@ -1,7 +1,17 @@
 from crewai import Agent
+from typing import List
 
 class DevTeamAgents:
     def __init__(self):
+        self.documentation_specialist = Agent(
+            role='Documentation Specialist',
+            goal='Create comprehensive and clear documentation for all aspects of the project',
+            backstory="""You are an experienced technical writer and documentation specialist with 
+            expertise in creating user guides, API documentation, and technical specifications. 
+            You excel at making complex information accessible and maintaining documentation quality.""",
+            verbose=True
+        )
+
         self.product_owner = Agent(
             role='Product Owner',
             goal='Define product vision, priorities, and requirements',
@@ -44,11 +54,12 @@ class DevTeamAgents:
             verbose=True
         )
 
-    def get_all_agents(self):
+    def get_all_agents(self) -> List[Agent]:
         return [
             self.product_owner,
             self.developer,
             self.qa_engineer,
             self.designer,
-            self.devops_engineer
+            self.devops_engineer,
+            self.documentation_specialist
         ]
