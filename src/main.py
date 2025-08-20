@@ -1,5 +1,6 @@
-from typing import List, Sequence, Any
-from crewai import Crew, Task, CrewOutput
+from typing import List, Sequence, Any, cast
+from crewai import Crew, Task, CrewOutput, Agent
+from crewai.agent import BaseAgent
 from src.agents.agent_definitions import DevTeamAgents
 from src.tasks.task_definitions import DevTeamTasks
 
@@ -117,22 +118,58 @@ class DevCrew:
         )
 
         # Configure task dependencies
+        # Conception Phase dependencies
         product_backlog_task.context = [requirements_spec_task]
+        
+        # Project Management Phase dependencies
         project_planning_task.context = [requirements_spec_task, product_backlog_task]
+        git_workflow_task.context = [project_planning_task]
         sprint_planning_task.context = [product_backlog_task, project_planning_task]
         progress_tracking_task.context = [project_planning_task, sprint_planning_task]
+        
+        # Design Phase dependencies
         mockups_task.context = [requirements_spec_task, product_backlog_task, project_planning_task]
         architecture_task.context = [requirements_spec_task, product_backlog_task, project_planning_task]
-        development_task.context = [mockups_task, architecture_task, sprint_planning_task]
+        
+        # Implementation Phase dependencies
+        development_task.context = [
+            mockups_task,
+            architecture_task,
+            sprint_planning_task,
+            git_workflow_task
+        ]
         qa_task.context = [requirements_spec_task, development_task]
-        devops_task.context = [development_task]
-        technical_docs_task.context = [requirements_spec_task, development_task, architecture_task]
-        test_docs_task.context = [qa_task]
-        user_docs_task.context = [requirements_spec_task, mockups_task, development_task]
+        devops_task.context = [development_task, git_workflow_task]
+        
+        # Review and Documentation Phase dependencies
+        code_review_task.context = [
+            development_task,
+            git_workflow_task,
+            requirements_spec_task
+        ]
+        sprint_report_task.context = [
+            progress_tracking_task,
+            code_review_task,
+            development_task,
+            qa_task
+        ]
+        technical_docs_task.context = [
+            requirements_spec_task,
+            development_task,
+            architecture_task,
+            code_review_task
+        ]
+        test_docs_task.context = [qa_task, code_review_task]
+        user_docs_task.context = [
+            requirements_spec_task,
+            mockups_task,
+            development_task,
+            code_review_task
+        ]
 
         # Create the crew with ordered phases
         crew = Crew(
-            agents=self.agents.get_all_agents(),
+            agents=cast(List[BaseAgent], self.agents.get_all_agents()),
             tasks=[
                 # Conception Phase
                 requirements_spec_task,
