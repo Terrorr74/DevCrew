@@ -1,9 +1,9 @@
-from crewai import Agent
 from typing import List
+from src.config.config import create_agent
 
 class DevTeamAgents:
     def __init__(self):
-        self.documentation_specialist = Agent(
+        self.documentation_specialist = create_agent(
             role='Documentation Specialist',
             goal='Create comprehensive and clear documentation for all aspects of the project',
             backstory="""You are an experienced technical writer and documentation specialist with 
@@ -12,7 +12,7 @@ class DevTeamAgents:
             verbose=True
         )
 
-        self.product_owner = Agent(
+        self.product_owner = create_agent(
             role='Product Owner & Project Manager',
             goal='Define product vision, manage project execution, and ensure value delivery',
             backstory="""You are an experienced Product Owner and Project Manager with a strong background in 
@@ -29,7 +29,7 @@ class DevTeamAgents:
             allow_delegation=True
         )
 
-        self.developer = Agent(
+        self.developer = create_agent(
             role='Software Developer & Version Control Manager',
             goal='Implement high-quality, maintainable code and manage version control workflow',
             backstory="""You are a senior software developer with expertise in multiple programming 
@@ -46,7 +46,7 @@ class DevTeamAgents:
             verbose=True
         )
 
-        self.qa_engineer = Agent(
+        self.qa_engineer = create_agent(
             role='QA Engineer',
             goal='Ensure software quality through comprehensive testing',
             backstory="""You are a detail-oriented QA engineer with experience in various testing 
@@ -54,7 +54,7 @@ class DevTeamAgents:
             verbose=True
         )
 
-        self.designer = Agent(
+        self.designer = create_agent(
             role='UI/UX Designer',
             goal='Create intuitive and appealing user interfaces and experiences',
             backstory="""You are a creative UI/UX designer with a strong understanding of user-centered 
@@ -62,7 +62,7 @@ class DevTeamAgents:
             verbose=True
         )
 
-        self.devops_engineer = Agent(
+        self.devops_engineer = create_agent(
             role='DevOps Engineer',
             goal='Optimize development operations and ensure reliable deployment',
             backstory="""You are a DevOps engineer skilled in automation, CI/CD, and cloud technologies. 
@@ -70,7 +70,7 @@ class DevTeamAgents:
             verbose=True
         )
 
-    def get_all_agents(self) -> List[Agent]:
+    def get_all_agents(self) -> List:
         return [
             self.product_owner,
             self.developer,
