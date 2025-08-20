@@ -1,0 +1,13 @@
+[tool.pytest]
+testpaths = "tests"
+python_files = "test_*.py"
+python_functions = "test_*"
+
+[tool.black]
+line-length = 88
+target-version = ['py37']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
