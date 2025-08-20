@@ -2,6 +2,172 @@ from crewai import Task
 
 class DevTeamTasks:
     @staticmethod
+    def create_project_planning_task(agent, requirements_spec, product_backlog):
+        return Task(
+            description=f"""Create a comprehensive project plan based on:
+            Requirements Specification: {requirements_spec}
+            Product Backlog: {product_backlog}
+            
+            1. Define project timeline and milestones
+            2. Create sprint planning and iterations
+            3. Identify project risks and mitigation strategies
+            4. Plan resource allocation and team capacity
+            5. Define project KPIs and success metrics
+            6. Create communication and reporting plan
+            """,
+            agent=agent,
+            expected_output="""Provide a detailed project management plan including:
+            - Project timeline with major milestones
+            - Sprint schedule and velocity targets
+            - Risk register with mitigation strategies
+            - Resource allocation matrix
+            - Project KPIs and metrics
+            - Communication plan and stakeholder matrix
+            - Dependencies and critical path analysis
+            """
+        )
+
+    @staticmethod
+    def create_sprint_planning_task(agent, product_backlog, project_plan):
+        return Task(
+            description=f"""Create detailed sprint plans based on:
+            Product Backlog: {product_backlog}
+            Project Plan: {project_plan}
+            
+            1. Define sprint goals and objectives
+            2. Select and prioritize sprint backlog items
+            3. Estimate story points and team capacity
+            4. Identify sprint dependencies and risks
+            5. Plan sprint ceremonies and meetings
+            """,
+            agent=agent,
+            expected_output="""Provide sprint planning documentation including:
+            - Sprint goals and objectives
+            - Prioritized sprint backlog
+            - Story point estimates and team capacity
+            - Sprint dependencies and risk mitigation
+            - Sprint ceremony schedule
+            - Definition of Ready and Done
+            """
+        )
+
+    @staticmethod
+    def create_progress_tracking_task(agent, project_plan, sprint_plan):
+        return Task(
+            description=f"""Create progress tracking and reporting framework based on:
+            Project Plan: {project_plan}
+            Sprint Plan: {sprint_plan}
+            
+            1. Define progress tracking metrics
+            2. Create burndown/burnup charts
+            3. Set up progress reporting templates
+            4. Define impediment tracking process
+            5. Create sprint review template
+            6. Define retrospective format
+            7. Set up automated progress notifications
+            8. Define sprint demo guidelines
+            """,
+            agent=agent,
+            expected_output="""Provide progress tracking framework including:
+            - Progress tracking metrics and KPIs
+            - Burndown/burnup chart templates
+            - Progress report templates
+            - Impediment log format
+            - Sprint review template
+            - Retrospective format and guidelines
+            - Status dashboard specification
+            - Sprint demo presentation template
+            - Daily progress notification format
+            """
+        )
+
+    @staticmethod
+    def create_git_workflow_task(agent, project_plan):
+        return Task(
+            description=f"""Create Git workflow and branching strategy based on:
+            Project Plan: {project_plan}
+            
+            1. Define branching strategy (feature, develop, release, hotfix)
+            2. Set up branch protection rules
+            3. Define commit message conventions
+            4. Create PR templates and guidelines
+            5. Define release process
+            6. Set up automated version tracking
+            7. Define emergency hotfix procedures
+            """,
+            agent=agent,
+            expected_output="""Provide comprehensive Git workflow documentation including:
+            - Detailed branching strategy
+            - Branch naming conventions
+            - Commit message format
+            - PR review checklist
+            - Release process workflow
+            - Version numbering scheme
+            - Hotfix procedure
+            - Deployment checklist
+            """
+        )
+
+    @staticmethod
+    def create_code_review_task(agent, feature_branch, requirements):
+        return Task(
+            description=f"""Perform comprehensive code review for:
+            Feature Branch: {feature_branch}
+            Requirements: {requirements}
+            
+            1. Review code quality and standards
+            2. Check test coverage and quality
+            3. Verify security best practices
+            4. Review documentation completeness
+            5. Check performance implications
+            6. Verify requirement implementation
+            7. Review error handling
+            8. Check for technical debt
+            """,
+            agent=agent,
+            expected_output="""Provide detailed code review report including:
+            - Code quality assessment
+            - Test coverage analysis
+            - Security review findings
+            - Documentation completeness check
+            - Performance analysis
+            - Requirements compliance check
+            - Error handling review
+            - Technical debt assessment
+            - Recommendations for improvements
+            """
+        )
+
+    @staticmethod
+    def create_sprint_report_task(agent, sprint_data, progress_metrics):
+        return Task(
+            description=f"""Generate comprehensive sprint report based on:
+            Sprint Data: {sprint_data}
+            Progress Metrics: {progress_metrics}
+            
+            1. Summarize sprint achievements
+            2. Report on completed user stories
+            3. Analyze velocity and burndown
+            4. List impediments and solutions
+            5. Document technical decisions
+            6. Report test coverage and quality
+            7. Document customer feedback
+            8. Provide next sprint recommendations
+            """,
+            agent=agent,
+            expected_output="""Provide detailed sprint report including:
+            - Sprint goals achievement status
+            - Completed user stories and points
+            - Velocity and burndown analysis
+            - Impediments and resolutions
+            - Technical decisions and rationale
+            - Quality metrics and test coverage
+            - Customer feedback summary
+            - Recommendations for next sprint
+            - Updated project timeline
+            """
+        )
+    @staticmethod
     def create_requirements_specification_task(agent, project_description):
         return Task(
             description=f"""Create a detailed requirements specification document based on:
