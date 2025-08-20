@@ -8,6 +8,8 @@ class DevCrew:
     def __init__(self):
         self.agents = DevTeamAgents()
         self.tasks = DevTeamTasks()
+        self.should_continue = True  # Flag to control execution
+        self.error_log = []  # Track errors for each task
 
     def create_development_plan(self, project_description: str) -> CrewOutput:
         """

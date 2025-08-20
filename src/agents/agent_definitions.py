@@ -1,5 +1,6 @@
 from typing import List
 from src.config.config import create_agent
+from src.utils.tools import DevTeamTools
 
 class DevTeamAgents:
     def __init__(self):
@@ -9,6 +10,7 @@ class DevTeamAgents:
             backstory="""You are an experienced technical writer and documentation specialist with 
             expertise in creating user guides, API documentation, and technical specifications. 
             You excel at making complex information accessible and maintaining documentation quality.""",
+            tools=DevTeamTools.get_documentation_tools(),
             verbose=True
         )
 
@@ -25,6 +27,7 @@ class DevTeamAgents:
             - Stakeholder communication
             - Agile ceremonies facilitation
             - Project metrics and KPI tracking""",
+            tools=DevTeamTools.get_product_owner_tools(),
             verbose=True,
             allow_delegation=True
         )
@@ -43,6 +46,7 @@ class DevTeamAgents:
             - Continuous Integration practices
             - Technical documentation
             - Code quality monitoring""",
+            tools=DevTeamTools.get_developer_tools(),
             verbose=True
         )
 
@@ -51,6 +55,7 @@ class DevTeamAgents:
             goal='Ensure software quality through comprehensive testing',
             backstory="""You are a detail-oriented QA engineer with experience in various testing 
             methodologies. You excel at finding edge cases and ensuring software reliability.""",
+            tools=DevTeamTools.get_qa_tools(),
             verbose=True
         )
 
@@ -59,6 +64,7 @@ class DevTeamAgents:
             goal='Create intuitive and appealing user interfaces and experiences',
             backstory="""You are a creative UI/UX designer with a strong understanding of user-centered 
             design principles. You create designs that are both beautiful and functional.""",
+            tools=DevTeamTools.get_architect_tools(),  # Using architect tools for design documentation
             verbose=True
         )
 
@@ -67,6 +73,7 @@ class DevTeamAgents:
             goal='Optimize development operations and ensure reliable deployment',
             backstory="""You are a DevOps engineer skilled in automation, CI/CD, and cloud technologies. 
             You ensure smooth deployment and operation of software systems.""",
+            tools=DevTeamTools.get_devops_tools(),
             verbose=True
         )
 
