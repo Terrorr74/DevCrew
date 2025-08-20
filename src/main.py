@@ -1,33 +1,5 @@
-from typin    def create_development_plan(self, project_description):
-        # Conception Phase Tasks
-        requirements_spec_task = self.tasks.create_requirements_specification_task(
-            self.agents.product_owner,
-            project_description
-        )
-
-        product_backlog_task = self.tasks.create_product_backlog_task(
-            self.agents.product_owner,
-            "{requirements_spec}"  # Will be replaced with actual requirements specification
-        )
-
-        mockups_task = self.tasks.create_mockups_task(
-            self.agents.designer,
-            "{requirements_spec}",  # Will be replaced with actual requirements specification
-            "{product_backlog}"  # Will be replaced with actual product backlog
-        )
-
-        architecture_task = self.tasks.create_architecture_design_task(
-            self.agents.developer,
-            "{requirements_spec}",  # Will be replaced with actual requirements specification
-            "{product_backlog}"  # Will be replaced with actual product backlog
-        )
-
-        # Implementation Phase Tasks
-        development_task = self.tasks.create_development_task(
-            self.agents.developer,
-            "{mockups}",  # Will be replaced with actual mockups
-            "{architecture}"  # Will be replaced with actual architecture design
-        )m crewai import Crew, Task
+from typing import List, Sequence
+from crewai import Crew, Task
 from src.agents.agent_definitions import DevTeamAgents
 from src.tasks.task_definitions import DevTeamTasks
 
@@ -36,55 +8,88 @@ class DevCrew:
         self.agents = DevTeamAgents()
         self.tasks = DevTeamTasks()
 
-    def create_development_plan(self, project_description):
-        # Create tasks with dependencies
-        requirements_task = self.tasks.create_product_requirements_task(
+    def create_development_plan(self, project_description: str) -> str:
+        """
+        Creates a complete development plan going through conception, implementation, and documentation phases.
+        
+        Args:
+            project_description: Initial project requirements and description
+            
+        Returns:
+            str: The complete development plan with all phases' outputs
+        """
+        # Conception Phase
+        requirements_spec_task = self.tasks.create_requirements_specification_task(
             self.agents.product_owner,
             project_description
         )
 
-        design_task = self.tasks.create_design_task(
-            self.agents.designer,
-            "{requirements}"  # Will be replaced with actual requirements during execution
+        product_backlog_task = self.tasks.create_product_backlog_task(
+            self.agents.product_owner,
+            "[PREV_TASK_RESULT]"  # Will be replaced with requirements_spec_task result
         )
 
+        mockups_task = self.tasks.create_mockups_task(
+            self.agents.designer,
+            "[PREV_TASK_RESULT]",  # Will be replaced with requirements_spec_task result
+            "[PREV_TASK_RESULT]"   # Will be replaced with product_backlog_task result
+        )
+
+        architecture_task = self.tasks.create_architecture_design_task(
+            self.agents.developer,
+            "[PREV_TASK_RESULT]",  # Will be replaced with requirements_spec_task result
+            "[PREV_TASK_RESULT]"   # Will be replaced with product_backlog_task result
+        )
+
+        # Implementation Phase
         development_task = self.tasks.create_development_task(
             self.agents.developer,
-            "{design_spec}",  # Will be replaced with actual design during execution
-            "{requirements}"  # Will be replaced with actual requirements during execution
+            "[PREV_TASK_RESULT]",  # Will be replaced with mockups_task result
+            "[PREV_TASK_RESULT]"   # Will be replaced with architecture_task result
         )
 
         qa_task = self.tasks.create_qa_task(
             self.agents.qa_engineer,
-            "{requirements}",  # Will be replaced with actual requirements during execution
-            "{implementation}"  # Will be replaced with actual implementation during execution
+            "[PREV_TASK_RESULT]",  # Will be replaced with requirements_spec_task result
+            "[PREV_TASK_RESULT]"   # Will be replaced with development_task result
         )
 
         devops_task = self.tasks.create_devops_task(
             self.agents.devops_engineer,
-            "{implementation}"  # Will be replaced with actual implementation during execution
+            "[PREV_TASK_RESULT]"   # Will be replaced with development_task result
         )
 
-        # Documentation tasks
+        # Documentation Phase
         technical_docs_task = self.tasks.create_technical_documentation_task(
-            self.agents.developer,
-            "{requirements}",  # Will be replaced with actual requirements
-            "{implementation}",  # Will be replaced with actual implementation
-            "{design_spec}"  # Will be replaced with actual design spec
+            self.agents.documentation_specialist,
+            "[PREV_TASK_RESULT]",  # Will be replaced with requirements_spec_task result
+            "[PREV_TASK_RESULT]",  # Will be replaced with development_task result
+            "[PREV_TASK_RESULT]"   # Will be replaced with architecture_task result
         )
 
         test_docs_task = self.tasks.create_test_documentation_task(
-            self.agents.qa_engineer,
-            "{test_plan}",  # Will be replaced with actual test plan
-            "{test_results}"  # Will be replaced with actual test results
+            self.agents.documentation_specialist,
+            "[PREV_TASK_RESULT]",  # Will be replaced with qa_task plan result
+            "[PREV_TASK_RESULT]"   # Will be replaced with qa_task results
         )
 
         user_docs_task = self.tasks.create_user_documentation_task(
-            self.agents.product_owner,
-            "{requirements}",  # Will be replaced with actual requirements
-            "{design_spec}",  # Will be replaced with actual design spec
-            "{implementation}"  # Will be replaced with actual implementation
+            self.agents.documentation_specialist,
+            "[PREV_TASK_RESULT]",  # Will be replaced with requirements_spec_task result
+            "[PREV_TASK_RESULT]",  # Will be replaced with mockups_task result
+            "[PREV_TASK_RESULT]"   # Will be replaced with development_task result
         )
+
+        # Configure task dependencies
+        product_backlog_task.context = [requirements_spec_task]
+        mockups_task.context = [requirements_spec_task, product_backlog_task]
+        architecture_task.context = [requirements_spec_task, product_backlog_task]
+        development_task.context = [mockups_task, architecture_task]
+        qa_task.context = [requirements_spec_task, development_task]
+        devops_task.context = [development_task]
+        technical_docs_task.context = [requirements_spec_task, development_task, architecture_task]
+        test_docs_task.context = [qa_task]
+        user_docs_task.context = [requirements_spec_task, mockups_task, development_task]
 
         # Create the crew with ordered phases
         crew = Crew(
@@ -112,6 +117,7 @@ class DevCrew:
         # Start the crew's work
         result = crew.kickoff()
         return result
+
 
 if __name__ == "__main__":
     # Example usage
