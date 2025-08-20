@@ -1,8 +1,37 @@
 """Tool definitions for AI agents."""
-from typing import List, Callable, Any, Dict, Optional
+from typing import List, Callable, Any, Dict, Optional, Union
 from crewai.tools import BaseTool
 import subprocess
 import os
+from rich.console import Console
+
+console = Console()
+
+def github_search(repo: str, query: str) -> str:
+    """Search for code in a GitHub repository."""
+    try:
+        # Use semantic search for documentation
+        cmd = f'gh search code "{query}" --repo {repo} --limit 5'
+        process = subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        stdout, stderr = process.communicate()
+        if process.returncode != 0:
+            return f"Error searching code: {stderr.decode()}"
+        return stdout.decode()
+    except Exception as e:
+        return f"Error: {str(e)}"
+from typing import List, Callable, Any, Dict, Optional, Union
+from crewai.tools import BaseTool
+import subprocess
+import os
+
+from functions import (
+    github_repo as mcp_github_search_code
+)
 
 def run_command(command: str) -> str:
     """Run a shell command and return its output."""
@@ -68,11 +97,40 @@ class FileSystemTool(BaseTool):
     def _run(self, command: str) -> str:
         return file_operation(command)
 
+class Context7Tool(BaseTool):
+    name: str = "context7"
+    description: str = "Get documentation and code examples from libraries"
+
+    def _run(
+        self,
+        library_name: str,
+        query: str
+    ) -> str:
+        """
+        Get documentation and code examples from repositories.
+
+        Args:
+            library_name: Name of the library to search for documentation
+            query: Specific query or topic to search for in the documentation
+        """
+        try:
+            # Search for code examples and documentation
+            result = github_search(library_name, query)
+            if not result:
+                return f"No documentation found for {library_name}"
+                
+            # Return the formatted results
+            return f"Documentation and examples for {query} in {library_name}:\n\n{result}"
+            
+        except Exception as e:
+            return f"Error fetching documentation: {str(e)}"
+
 # Create tool instances
 code_analysis_tool = CodeAnalysisTool()
 test_runner_tool = TestRunnerTool()
 doc_generator_tool = DocGeneratorTool()
 file_system_tool = FileSystemTool()
+context7_tool = Context7Tool()
 
 class DevTeamTools:
     """Collection of tools for development team agents."""
@@ -81,51 +139,17 @@ class DevTeamTools:
     def get_developer_tools() -> List[BaseTool]:
         """Get tools for the developer agent."""
         return [
-            code_analysis_tool,
-            test_runner_tool,
-            file_system_tool,
-            doc_generator_tool
-        ]
-    
-    @staticmethod
-    def get_architect_tools() -> List[BaseTool]:
-        """Get tools for the architect agent."""
-        return [
-            code_analysis_tool,
-            doc_generator_tool,
-            file_system_tool
-        ]
-    
-    @staticmethod
-    def get_devops_tools() -> List[BaseTool]:
-        """Get tools for the DevOps engineer agent."""
-        return [
-            file_system_tool,
-            code_analysis_tool
+            code_analysis_tool,  # For code quality checks
+            file_system_tool,    # For file operations
+            test_runner_tool,    # For running unit tests
+            context7_tool        # For accessing documentation
         ]
     
     @staticmethod
     def get_qa_tools() -> List[BaseTool]:
         """Get tools for the QA engineer agent."""
         return [
-            test_runner_tool,
-            file_system_tool,
-            code_analysis_tool
-        ]
-    
-    @staticmethod
-    def get_product_owner_tools() -> List[BaseTool]:
-        """Get tools for the product owner agent."""
-        return [
-            doc_generator_tool,
-            file_system_tool
-        ]
-    
-    @staticmethod
-    def get_documentation_tools() -> List[BaseTool]:
-        """Get tools for the documentation specialist agent."""
-        return [
-            doc_generator_tool,
-            file_system_tool,
-            code_analysis_tool
+            test_runner_tool,    # For running tests
+            code_analysis_tool,  # For code quality analysis
+            file_system_tool     # For accessing test files and results
         ]
